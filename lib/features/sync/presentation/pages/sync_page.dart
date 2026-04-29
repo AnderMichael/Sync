@@ -190,7 +190,7 @@ class _SyncPageState extends State<SyncPage> {
                           ),
                           SizedBox(height: 4),
                           Text(
-                            'No hay operaciones en la cola.',
+                            'No hay operaciones pendientes en la cola.',
                             style: TextStyle(
                               fontSize: 13,
                               color: AppColors.textSecondary,

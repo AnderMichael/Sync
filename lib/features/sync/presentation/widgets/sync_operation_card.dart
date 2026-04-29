@@ -31,18 +31,20 @@ class _SyncOperationCardState extends State<SyncOperationCard> {
     }
   }
 
-  int get _remaining => (_maxAttempts - widget.operation.attempts).clamp(0, _maxAttempts);
-  int get _prevRemaining => (_maxAttempts - _prevAttempts).clamp(0, _maxAttempts);
+  int get _remaining =>
+      (_maxAttempts - widget.operation.attempts).clamp(0, _maxAttempts);
+  int get _prevRemaining =>
+      (_maxAttempts - _prevAttempts).clamp(0, _maxAttempts);
 
   @override
   Widget build(BuildContext context) {
     final op = widget.operation;
     final isCreate = op.operationType == 'create';
     final isSyncing = op.status == 'syncing';
+    final isFailed = op.status == 'failed';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppColors.cardWhite,
         borderRadius: BorderRadius.circular(14),
@@ -60,120 +62,152 @@ class _SyncOperationCardState extends State<SyncOperationCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: isCreate
-                      ? AppColors.accentLime.withAlpha(40)
-                      : Colors.blue.withAlpha(25),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Text(
-                  isCreate ? 'CREAR' : 'ACTUALIZAR',
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    color: isCreate ? const Color(0xFF5A7A00) : Colors.blue,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
+          // ── Header ──────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
                   op.managementTitle ?? op.localId,
                   style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
                     color: AppColors.primaryDark,
                   ),
-                  maxLines: 1,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-              ),
-              AppStatusBadge(status: op.status),
-            ],
-          ),
-          if (isSyncing) ...[
-            const SizedBox(height: 12),
-            _CountdownWidget(
-              remaining: _remaining,
-              prevRemaining: _prevRemaining,
-              maxAttempts: _maxAttempts,
-            ),
-          ] else if (op.attempts > 0) ...[
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                const Icon(Icons.refresh, size: 12, color: AppColors.textMuted),
-                const SizedBox(width: 4),
-                Text(
-                  'Intentos: ${op.attempts}',
-                  style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: isCreate
+                            ? AppColors.accentLime.withAlpha(40)
+                            : Colors.blue.withAlpha(25),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        isCreate ? 'CREAR' : 'ACTUALIZAR',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: isCreate
+                              ? const Color(0xFF5A7A00)
+                              : Colors.blue,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    AppStatusBadge(status: op.status),
+                  ],
                 ),
               ],
             ),
-          ],
-          if (op.lastError != null) ...[
-            const SizedBox(height: 4),
-            Text(
-              op.lastError!,
-              style: const TextStyle(fontSize: 11, color: AppColors.statusFailed),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-          if (op.status == 'failed' && widget.onRetry != null) ...[
-            const SizedBox(height: 10),
-            SizedBox(
-              width: double.infinity,
-              height: 36,
-              child: OutlinedButton.icon(
-                onPressed: widget.onRetry,
-                icon: const Icon(Icons.refresh, size: 14,
-                    color: AppColors.primaryDark),
-                label: const Text(
-                  'Reintentar',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.primaryDark,
+          ),
+
+          // ── Body (condicional) ───────────────────────────────
+          if (isSyncing)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(14, 0, 14, 12),
+              child: _CountdownWidget(
+                remaining: _remaining,
+                prevRemaining: _prevRemaining,
+                maxAttempts: _maxAttempts,
+              ),
+            )
+          else if (isFailed && op.lastError != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(14, 0, 14, 12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(Icons.error_outline,
+                      size: 13, color: AppColors.statusFailed),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      op.lastError!,
+                      style: const TextStyle(
+                          fontSize: 11, color: AppColors.statusFailed),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                ),
-                style: OutlinedButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  side: const BorderSide(color: AppColors.primaryDark),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
+                ],
               ),
             ),
-          ],
-          const SizedBox(height: 8),
+
+          // ── Footer ──────────────────────────────────────────
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF2F3F5),
-              borderRadius: BorderRadius.circular(6),
+            decoration: const BoxDecoration(
+              color: Color(0xFFF7F8FA),
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(14)),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            child: Column(
               children: [
-                const Icon(Icons.fingerprint, size: 11, color: AppColors.textMuted),
-                const SizedBox(width: 4),
-                Text(
-                  op.localId.substring(0, 8).toUpperCase(),
-                  style: const TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textMuted,
-                    letterSpacing: 1.0,
-                    fontFamily: 'monospace',
-                  ),
+                Row(
+                  children: [
+                    // UUID
+                    const Icon(Icons.fingerprint,
+                        size: 12, color: AppColors.textMuted),
+                    const SizedBox(width: 4),
+                    Text(
+                      op.localId.substring(0, 8).toUpperCase(),
+                      style: const TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textMuted,
+                        letterSpacing: 1.0,
+                        fontFamily: 'monospace',
+                      ),
+                    ),
+                    const Spacer(),
+                    // Intentos
+                    if (op.attempts > 0) ...[
+                      const Icon(Icons.refresh,
+                          size: 12, color: AppColors.textMuted),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${op.attempts} intento${op.attempts != 1 ? 's' : ''}',
+                        style: const TextStyle(
+                            fontSize: 11, color: AppColors.textMuted),
+                      ),
+                    ],
+                  ],
                 ),
+                if (isFailed && widget.onRetry != null) ...[
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 34,
+                    child: OutlinedButton.icon(
+                      onPressed: widget.onRetry,
+                      icon: const Icon(Icons.refresh,
+                          size: 13, color: AppColors.primaryDark),
+                      label: const Text(
+                        'Reintentar',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primaryDark,
+                        ),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        side: const BorderSide(color: AppColors.primaryDark),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
@@ -208,8 +242,8 @@ class _CountdownWidget extends StatelessWidget {
           curve: Curves.easeInOut,
           builder: (context, value, _) {
             return SizedBox(
-              width: 42,
-              height: 42,
+              width: 40,
+              height: 40,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
@@ -230,17 +264,16 @@ class _CountdownWidget extends StatelessWidget {
                     transitionBuilder: (child, animation) => ScaleTransition(
                       scale: Tween<double>(begin: 0.4, end: 1.0).animate(
                         CurvedAnimation(
-                          parent: animation,
-                          curve: Curves.elasticOut,
-                        ),
+                            parent: animation, curve: Curves.elasticOut),
                       ),
-                      child: FadeTransition(opacity: animation, child: child),
+                      child:
+                          FadeTransition(opacity: animation, child: child),
                     ),
                     child: Text(
                       '$remaining',
                       key: ValueKey(remaining),
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 13,
                         fontWeight: FontWeight.w900,
                         color: remaining > 1
                             ? AppColors.primaryDark
@@ -255,7 +288,7 @@ class _CountdownWidget extends StatelessWidget {
             );
           },
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

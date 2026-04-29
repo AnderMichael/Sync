@@ -21,6 +21,7 @@ class _ManagementsPageState extends State<ManagementsPage> {
     ('all', 'Todos'),
     ('synced', 'Sincronizados'),
     ('pending', 'Pendientes'),
+    ('failed', 'Fallidos'),
   ];
 
   @override

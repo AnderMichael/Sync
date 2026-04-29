@@ -34,98 +34,133 @@ class BitacoraEntryCard extends StatelessWidget {
         children: [
           // ── Header ──────────────────────────────────────────
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
-            child: Row(
+            padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: isCreate
-                        ? AppColors.accentLime.withAlpha(40)
-                        : Colors.blue.withAlpha(25),
-                    borderRadius: BorderRadius.circular(6),
+                Text(
+                  entry.managementTitle ?? entry.localId,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.primaryDark,
                   ),
-                  child: Text(
-                    isCreate ? 'CREAR' : 'ACTUALIZAR',
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color:
-                          isCreate ? const Color(0xFF5A7A00) : Colors.blue,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    entry.managementTitle ?? entry.localId,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.primaryDark,
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: isCreate
+                            ? AppColors.accentLime.withAlpha(40)
+                            : Colors.blue.withAlpha(25),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        isCreate ? 'CREAR' : 'ACTUALIZAR',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: isCreate
+                              ? const Color(0xFF5A7A00)
+                              : Colors.blue,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: statusColor.withAlpha(25),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    isSynced ? 'ÉXITO' : 'FALLIDO',
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: statusColor,
-                      letterSpacing: 0.5,
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: statusColor.withAlpha(25),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        isSynced ? 'ÉXITO' : 'FALLIDO',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: statusColor,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ],
             ),
           ),
-          // ── Meta fields ─────────────────────────────────────
+
+          // ── Versión snapshot ─────────────────────────────────
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-            child: Row(
-              children: [
-                _MetaChip(
-                  icon: Icons.access_time_outlined,
-                  label: DateFormat('dd/MM/yy HH:mm:ss')
-                      .format(entry.occurredAt),
-                ),
-                const SizedBox(width: 8),
-                _MetaChip(
-                  icon: Icons.refresh,
-                  label: '${entry.attempts} intento${entry.attempts != 1 ? 's' : ''}',
-                ),
-              ],
+            padding: const EdgeInsets.fromLTRB(14, 0, 14, 12),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF7F8FA),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'VERSIÓN DE GESTIÓN',
+                    style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textMuted,
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  _VersionRow(
+                    label: 'Título',
+                    value: v['title']?.toString() ?? '—',
+                  ),
+                  _VersionRow(
+                    label: 'Descripción',
+                    value: v['description']?.toString() ?? '—',
+                  ),
+                  _VersionRow(
+                    label: 'Monto',
+                    value: v['amount'] != null
+                        ? 'S/ ${(v['amount'] as num).toStringAsFixed(2)}'
+                        : '—',
+                  ),
+                  _VersionRow(
+                    label: 'Fecha',
+                    value: v['date'] != null
+                        ? DateFormat('dd/MM/yyyy')
+                            .format(DateTime.parse(v['date'] as String))
+                        : '—',
+                    isLast: true,
+                  ),
+                ],
+              ),
             ),
           ),
-          if (entry.errorMessage != null) ...[
-            const SizedBox(height: 8),
+
+          // ── Error (si aplica) ────────────────────────────────
+          if (entry.errorMessage != null)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.error_outline,
+                  const Icon(Icons.error_outline,
                       size: 13, color: AppColors.statusFailed),
-                  const SizedBox(width: 4),
+                  const SizedBox(width: 6),
                   Expanded(
                     child: Text(
                       entry.errorMessage!,
                       style: const TextStyle(
-                        fontSize: 11,
-                        color: AppColors.statusFailed,
-                      ),
+                          fontSize: 11, color: AppColors.statusFailed),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -133,45 +168,49 @@ class BitacoraEntryCard extends StatelessWidget {
                 ],
               ),
             ),
-          ],
-          // ── Gestión version snapshot ─────────────────────────
-          const SizedBox(height: 12),
+
+          // ── Footer ──────────────────────────────────────────
           Container(
-            margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF2F3F5),
-              borderRadius: BorderRadius.circular(10),
+            decoration: const BoxDecoration(
+              color: Color(0xFFF7F8FA),
+              borderRadius:
+                  BorderRadius.vertical(bottom: Radius.circular(16)),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            padding:
+                const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            child: Row(
               children: [
-                const Text(
-                  'VERSIÓN DE GESTIÓN',
-                  style: TextStyle(
-                    fontSize: 9,
+                const Icon(Icons.fingerprint,
+                    size: 12, color: AppColors.textMuted),
+                const SizedBox(width: 4),
+                Text(
+                  entry.localId.substring(0, 8).toUpperCase(),
+                  style: const TextStyle(
+                    fontSize: 10,
                     fontWeight: FontWeight.w700,
                     color: AppColors.textMuted,
                     letterSpacing: 1.0,
+                    fontFamily: 'monospace',
                   ),
                 ),
-                const SizedBox(height: 8),
-                _VersionField(
-                    label: 'Título', value: v['title']?.toString() ?? '—'),
-                _VersionField(
-                    label: 'Descripción',
-                    value: v['description']?.toString() ?? '—'),
-                _VersionField(
-                    label: 'Monto',
-                    value: v['amount'] != null
-                        ? 'S/ ${(v['amount'] as num).toStringAsFixed(2)}'
-                        : '—'),
-                _VersionField(
-                    label: 'Fecha',
-                    value: v['date'] != null
-                        ? DateFormat('dd/MM/yyyy')
-                            .format(DateTime.parse(v['date'] as String))
-                        : '—'),
+                const SizedBox(width: 12),
+                const Icon(Icons.access_time_outlined,
+                    size: 12, color: AppColors.textMuted),
+                const SizedBox(width: 4),
+                Text(
+                  DateFormat('dd/MM/yy HH:mm').format(entry.occurredAt),
+                  style: const TextStyle(
+                      fontSize: 11, color: AppColors.textMuted),
+                ),
+                const Spacer(),
+                const Icon(Icons.refresh,
+                    size: 12, color: AppColors.textMuted),
+                const SizedBox(width: 4),
+                Text(
+                  '${entry.attempts} intento${entry.attempts != 1 ? 's' : ''}',
+                  style: const TextStyle(
+                      fontSize: 11, color: AppColors.textMuted),
+                ),
               ],
             ),
           ),
@@ -181,43 +220,26 @@ class BitacoraEntryCard extends StatelessWidget {
   }
 }
 
-class _MetaChip extends StatelessWidget {
-  final IconData icon;
-  final String label;
-
-  const _MetaChip({required this.icon, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, size: 11, color: AppColors.textMuted),
-        const SizedBox(width: 3),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
-        ),
-      ],
-    );
-  }
-}
-
-class _VersionField extends StatelessWidget {
+class _VersionRow extends StatelessWidget {
   final String label;
   final String value;
+  final bool isLast;
 
-  const _VersionField({required this.label, required this.value});
+  const _VersionRow({
+    required this.label,
+    required this.value,
+    this.isLast = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
+      padding: EdgeInsets.only(bottom: isLast ? 0 : 5),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 80,
+            width: 82,
             child: Text(
               label,
               style: const TextStyle(
