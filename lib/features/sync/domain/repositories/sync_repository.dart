@@ -1,4 +1,4 @@
-import '../entities/sync_operation.dart';
+import 'package:sync_app/features/sync/domain/entities/sync_operation.dart';
 
 abstract class SyncRepository {
   Stream<List<SyncOperation>> watchQueue();

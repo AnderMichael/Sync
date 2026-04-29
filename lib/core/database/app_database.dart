@@ -1,9 +1,9 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
-import 'tables/managements_table.dart';
-import 'tables/sync_log_table.dart';
-import 'tables/sync_queue_table.dart';
+import 'package:sync_app/core/database/tables/managements_table.dart';
+import 'package:sync_app/core/database/tables/sync_log_table.dart';
+import 'package:sync_app/core/database/tables/sync_queue_table.dart';
 
 part 'app_database.g.dart';
 

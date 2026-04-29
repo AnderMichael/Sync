@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../domain/entities/management.dart';
+import 'package:sync_app/features/managements/domain/entities/management.dart';
 
 sealed class ManagementsState extends Equatable {
   const ManagementsState();

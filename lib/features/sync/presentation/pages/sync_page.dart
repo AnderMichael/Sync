@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import '../../../../app/app_routes.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/widgets/app_primary_button.dart';
-import '../../application/cubit/sync_cubit.dart';
-import '../../application/cubit/sync_state.dart';
-import '../../domain/entities/sync_operation.dart';
-import '../widgets/sync_operation_card.dart';
-import '../widgets/sync_summary_card.dart';
+import 'package:sync_app/app/app_routes.dart';
+import 'package:sync_app/core/theme/app_colors.dart';
+import 'package:sync_app/core/widgets/app_primary_button.dart';
+import 'package:sync_app/features/sync/application/cubit/sync_cubit.dart';
+import 'package:sync_app/features/sync/application/cubit/sync_state.dart';
+import 'package:sync_app/features/sync/domain/entities/sync_operation.dart';
+import 'package:sync_app/features/sync/presentation/widgets/sync_operation_card.dart';
+import 'package:sync_app/features/sync/presentation/widgets/sync_summary_card.dart';
 
 class SyncPage extends StatefulWidget {
   const SyncPage({super.key});

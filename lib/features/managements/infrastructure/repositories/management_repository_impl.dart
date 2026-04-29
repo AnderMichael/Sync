@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
-import '../../../../core/database/app_database.dart';
-import '../../domain/entities/management.dart';
-import '../../domain/repositories/management_repository.dart';
+import 'package:sync_app/core/database/app_database.dart';
+import 'package:sync_app/features/managements/domain/entities/management.dart';
+import 'package:sync_app/features/managements/domain/repositories/management_repository.dart';
 
 class ManagementRepositoryImpl implements ManagementRepository {
   final AppDatabase _db;

@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
-import '../../../../core/database/app_database.dart';
-import '../../domain/entities/sync_operation.dart';
-import '../../domain/repositories/sync_repository.dart';
+import 'package:sync_app/core/database/app_database.dart';
+import 'package:sync_app/features/sync/domain/entities/sync_operation.dart';
+import 'package:sync_app/features/sync/domain/repositories/sync_repository.dart';
 
 class SyncRepositoryImpl implements SyncRepository {
   final AppDatabase _db;

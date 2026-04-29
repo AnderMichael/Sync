@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import '../core/widgets/app_bottom_navigation.dart';
-import '../features/managements/application/cubit/managements_cubit.dart';
-import '../features/managements/presentation/pages/managements_page.dart';
-import '../features/sync/application/cubit/sync_cubit.dart';
-import '../features/sync/presentation/pages/sync_page.dart';
+import 'package:sync_app/core/widgets/app_bottom_navigation.dart';
+import 'package:sync_app/features/managements/application/cubit/managements_cubit.dart';
+import 'package:sync_app/features/managements/presentation/pages/managements_page.dart';
+import 'package:sync_app/features/sync/application/cubit/sync_cubit.dart';
+import 'package:sync_app/features/sync/presentation/pages/sync_page.dart';
 
 class HomeShellPage extends StatefulWidget {
   const HomeShellPage({super.key});

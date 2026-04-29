@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../domain/entities/sync_log_entry.dart';
+import 'package:sync_app/core/theme/app_colors.dart';
+import 'package:sync_app/features/bitacora/domain/entities/sync_log_entry.dart';
 
 class BitacoraEntryCard extends StatelessWidget {
   final SyncLogEntry entry;

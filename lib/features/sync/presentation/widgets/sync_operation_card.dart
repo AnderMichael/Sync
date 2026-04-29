@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/widgets/app_status_badge.dart';
-import '../../domain/entities/sync_operation.dart';
+import 'package:sync_app/core/theme/app_colors.dart';
+import 'package:sync_app/core/widgets/app_status_badge.dart';
+import 'package:sync_app/features/sync/domain/entities/sync_operation.dart';
 
 class SyncOperationCard extends StatefulWidget {
   final SyncOperation operation;

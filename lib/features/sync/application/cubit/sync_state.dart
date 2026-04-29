@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import '../../domain/entities/sync_operation.dart';
-import '../../domain/entities/sync_summary.dart';
+import 'package:sync_app/features/sync/domain/entities/sync_operation.dart';
+import 'package:sync_app/features/sync/domain/entities/sync_summary.dart';
 
 sealed class SyncState extends Equatable {
   const SyncState();

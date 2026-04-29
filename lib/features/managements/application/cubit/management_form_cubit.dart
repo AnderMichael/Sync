@@ -1,10 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
-import '../../domain/entities/management.dart';
-import '../../domain/repositories/management_repository.dart';
-import '../../../sync/domain/entities/sync_operation.dart';
-import '../../../sync/domain/repositories/sync_repository.dart';
-import 'management_form_state.dart';
+import 'package:sync_app/features/managements/domain/entities/management.dart';
+import 'package:sync_app/features/managements/domain/repositories/management_repository.dart';
+import 'package:sync_app/features/sync/domain/entities/sync_operation.dart';
+import 'package:sync_app/features/sync/domain/repositories/sync_repository.dart';
+import 'package:sync_app/features/managements/application/cubit/management_form_state.dart';
 
 class ManagementFormCubit extends Cubit<ManagementFormState> {
   final ManagementRepository _managementRepo;

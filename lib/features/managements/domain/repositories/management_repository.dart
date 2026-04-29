@@ -1,4 +1,4 @@
-import '../entities/management.dart';
+import 'package:sync_app/features/managements/domain/entities/management.dart';
 
 abstract class ManagementRepository {
   Stream<List<Management>> watchAll({String? syncStatusFilter});

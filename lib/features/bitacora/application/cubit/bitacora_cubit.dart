@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../domain/repositories/sync_log_repository.dart';
-import 'bitacora_state.dart';
+import 'package:sync_app/features/bitacora/domain/repositories/sync_log_repository.dart';
+import 'package:sync_app/features/bitacora/application/cubit/bitacora_state.dart';
 
 class BitacoraCubit extends Cubit<BitacoraState> {
   final SyncLogRepository _repository;

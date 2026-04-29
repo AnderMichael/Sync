@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:intl/intl.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/widgets/app_primary_button.dart';
-import '../../application/cubit/management_form_cubit.dart';
-import '../../application/cubit/management_form_state.dart';
+import 'package:sync_app/core/theme/app_colors.dart';
+import 'package:sync_app/core/widgets/app_primary_button.dart';
+import 'package:sync_app/features/managements/application/cubit/management_form_cubit.dart';
+import 'package:sync_app/features/managements/application/cubit/management_form_state.dart';
 
 class ManagementFormPage extends StatefulWidget {
   final String? localId;

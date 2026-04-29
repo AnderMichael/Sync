@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:drift/drift.dart';
-import '../../../../core/database/app_database.dart';
-import '../../domain/entities/sync_log_entry.dart';
-import '../../domain/repositories/sync_log_repository.dart';
+import 'package:sync_app/core/database/app_database.dart';
+import 'package:sync_app/features/bitacora/domain/entities/sync_log_entry.dart';
+import 'package:sync_app/features/bitacora/domain/repositories/sync_log_repository.dart';
 
 class SyncLogRepositoryImpl implements SyncLogRepository {
   final AppDatabase _db;

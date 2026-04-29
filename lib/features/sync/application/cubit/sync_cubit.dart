@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../domain/entities/sync_operation.dart';
-import '../../domain/entities/sync_summary.dart';
-import '../../domain/repositories/sync_repository.dart';
-import '../services/sync_engine.dart';
-import 'sync_state.dart';
+import 'package:sync_app/features/sync/domain/entities/sync_operation.dart';
+import 'package:sync_app/features/sync/domain/entities/sync_summary.dart';
+import 'package:sync_app/features/sync/domain/repositories/sync_repository.dart';
+import 'package:sync_app/features/sync/application/services/sync_engine.dart';
+import 'package:sync_app/features/sync/application/cubit/sync_state.dart';
 
 class SyncCubit extends Cubit<SyncState> {
   final SyncEngine _engine;

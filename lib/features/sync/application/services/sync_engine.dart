@@ -1,10 +1,10 @@
 import 'package:uuid/uuid.dart';
-import '../../../bitacora/domain/entities/sync_log_entry.dart';
-import '../../../bitacora/domain/repositories/sync_log_repository.dart';
-import '../../../managements/domain/repositories/management_repository.dart';
-import '../../../sync/domain/entities/sync_operation.dart';
-import '../../../sync/domain/repositories/sync_repository.dart';
-import '../../../../core/network/fake_backend_service.dart';
+import 'package:sync_app/features/bitacora/domain/entities/sync_log_entry.dart';
+import 'package:sync_app/features/bitacora/domain/repositories/sync_log_repository.dart';
+import 'package:sync_app/features/managements/domain/repositories/management_repository.dart';
+import 'package:sync_app/features/sync/domain/entities/sync_operation.dart';
+import 'package:sync_app/features/sync/domain/repositories/sync_repository.dart';
+import 'package:sync_app/core/network/fake_backend_service.dart';
 
 class SyncEngine {
   final SyncRepository _syncRepo;

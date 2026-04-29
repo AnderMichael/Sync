@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../application/cubit/bitacora_cubit.dart';
-import '../../application/cubit/bitacora_state.dart';
-import '../widgets/bitacora_entry_card.dart';
+import 'package:sync_app/core/theme/app_colors.dart';
+import 'package:sync_app/features/bitacora/application/cubit/bitacora_cubit.dart';
+import 'package:sync_app/features/bitacora/application/cubit/bitacora_state.dart';
+import 'package:sync_app/features/bitacora/presentation/widgets/bitacora_entry_card.dart';
 
 class BitacoraPage extends StatelessWidget {
   const BitacoraPage({super.key});

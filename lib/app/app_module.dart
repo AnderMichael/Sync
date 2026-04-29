@@ -1,21 +1,21 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import '../core/database/app_database.dart';
-import '../core/network/fake_backend_service.dart';
-import '../features/bitacora/application/cubit/bitacora_cubit.dart';
-import '../features/bitacora/domain/repositories/sync_log_repository.dart';
-import '../features/bitacora/infrastructure/repositories/sync_log_repository_impl.dart';
-import '../features/bitacora/presentation/pages/bitacora_page.dart';
-import '../features/managements/application/cubit/management_form_cubit.dart';
-import '../features/managements/application/cubit/managements_cubit.dart';
-import '../features/managements/domain/repositories/management_repository.dart';
-import '../features/managements/infrastructure/repositories/management_repository_impl.dart';
-import '../features/managements/presentation/pages/management_form_page.dart';
-import '../features/sync/application/cubit/sync_cubit.dart';
-import '../features/sync/application/services/sync_engine.dart';
-import '../features/sync/domain/repositories/sync_repository.dart';
-import '../features/sync/infrastructure/repositories/sync_repository_impl.dart';
-import 'home_shell_page.dart';
+import 'package:sync_app/core/database/app_database.dart';
+import 'package:sync_app/core/network/fake_backend_service.dart';
+import 'package:sync_app/features/bitacora/application/cubit/bitacora_cubit.dart';
+import 'package:sync_app/features/bitacora/domain/repositories/sync_log_repository.dart';
+import 'package:sync_app/features/bitacora/infrastructure/repositories/sync_log_repository_impl.dart';
+import 'package:sync_app/features/bitacora/presentation/pages/bitacora_page.dart';
+import 'package:sync_app/features/managements/application/cubit/management_form_cubit.dart';
+import 'package:sync_app/features/managements/application/cubit/managements_cubit.dart';
+import 'package:sync_app/features/managements/domain/repositories/management_repository.dart';
+import 'package:sync_app/features/managements/infrastructure/repositories/management_repository_impl.dart';
+import 'package:sync_app/features/managements/presentation/pages/management_form_page.dart';
+import 'package:sync_app/features/sync/application/cubit/sync_cubit.dart';
+import 'package:sync_app/features/sync/application/services/sync_engine.dart';
+import 'package:sync_app/features/sync/domain/repositories/sync_repository.dart';
+import 'package:sync_app/features/sync/infrastructure/repositories/sync_repository_impl.dart';
+import 'package:sync_app/app/home_shell_page.dart';
 
 class AppModule extends Module {
   @override

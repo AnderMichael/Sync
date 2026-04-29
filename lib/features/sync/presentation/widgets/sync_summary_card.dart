@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../domain/entities/sync_summary.dart';
+import 'package:sync_app/core/theme/app_colors.dart';
+import 'package:sync_app/features/sync/domain/entities/sync_summary.dart';
 
 class SyncSummaryCard extends StatelessWidget {
   final SyncSummary summary;

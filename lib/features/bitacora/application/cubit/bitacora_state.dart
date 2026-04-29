@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../domain/entities/sync_log_entry.dart';
+import 'package:sync_app/features/bitacora/domain/entities/sync_log_entry.dart';
 
 sealed class BitacoraState extends Equatable {
   const BitacoraState();

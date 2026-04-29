@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../domain/entities/management.dart';
-import '../../domain/repositories/management_repository.dart';
-import 'managements_state.dart';
+import 'package:sync_app/features/managements/domain/entities/management.dart';
+import 'package:sync_app/features/managements/domain/repositories/management_repository.dart';
+import 'package:sync_app/features/managements/application/cubit/managements_state.dart';
 
 class ManagementsCubit extends Cubit<ManagementsState> {
   final ManagementRepository _repository;
