@@ -20,11 +20,12 @@ class SyncCubit extends Cubit<SyncState> {
     _subscription?.cancel();
     _subscription = _repository.watchQueue().listen(
       (operations) {
-        final summary = _buildSummary(operations);
         if (_isSyncing) {
-          emit(SyncSyncing(operations: operations, summary: summary));
+          emit(SyncSyncing(
+              operations: operations, summary: _buildSummary(operations)));
         } else {
-          emit(SyncLoaded(operations: operations, summary: summary));
+          emit(SyncLoaded(
+              operations: operations, summary: _buildSummary(operations)));
         }
       },
       onError: (_) => emit(const SyncError('No se pudo sincronizar la cola.')),
@@ -33,39 +34,22 @@ class SyncCubit extends Cubit<SyncState> {
 
   Future<void> sync() async {
     if (_isSyncing) return;
-    _isSyncing = true;
 
+    // Clear previous batch (synced + failed) before starting a new one
+    await _repository.clearCompleted();
+
+    _isSyncing = true;
     final ops = state is SyncLoaded
         ? (state as SyncLoaded).operations
         : <SyncOperation>[];
-    final summary = state is SyncLoaded
-        ? (state as SyncLoaded).summary
-        : SyncSummary.empty();
-    emit(SyncSyncing(operations: ops, summary: summary));
+    emit(SyncSyncing(operations: ops, summary: _buildSummary(ops)));
 
     try {
       await _engine.syncPending();
     } finally {
       _isSyncing = false;
-    }
-  }
-
-  Future<void> retryFailed() async {
-    if (_isSyncing) return;
-    _isSyncing = true;
-
-    final ops = state is SyncLoaded
-        ? (state as SyncLoaded).operations
-        : <SyncOperation>[];
-    final summary = state is SyncLoaded
-        ? (state as SyncLoaded).summary
-        : SyncSummary.empty();
-    emit(SyncSyncing(operations: ops, summary: summary));
-
-    try {
-      await _engine.retryFailed();
-    } finally {
-      _isSyncing = false;
+      // Force SyncLoaded — stream may not re-emit if nothing changed
+      _listen();
     }
   }
 
@@ -76,15 +60,13 @@ class SyncCubit extends Cubit<SyncState> {
     final ops = state is SyncLoaded
         ? (state as SyncLoaded).operations
         : <SyncOperation>[];
-    final summary = state is SyncLoaded
-        ? (state as SyncLoaded).summary
-        : SyncSummary.empty();
-    emit(SyncSyncing(operations: ops, summary: summary));
+    emit(SyncSyncing(operations: ops, summary: _buildSummary(ops)));
 
     try {
       await _engine.retryOne(operationId);
     } finally {
       _isSyncing = false;
+      _listen();
     }
   }
 
@@ -96,9 +78,9 @@ class SyncCubit extends Cubit<SyncState> {
     final failed = operations.where((o) => o.status == 'failed').length;
 
     DateTime? lastSync;
-    final synced_ = operations.where((o) => o.syncedAt != null);
-    if (synced_.isNotEmpty) {
-      lastSync = synced_
+    final withSyncedAt = operations.where((o) => o.syncedAt != null);
+    if (withSyncedAt.isNotEmpty) {
+      lastSync = withSyncedAt
           .map((o) => o.syncedAt!)
           .reduce((a, b) => a.isAfter(b) ? a : b);
     }

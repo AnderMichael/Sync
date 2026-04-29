@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import '../core/widgets/app_bottom_navigation.dart';
-import '../features/bitacora/application/cubit/bitacora_cubit.dart';
-import '../features/bitacora/presentation/pages/bitacora_page.dart';
 import '../features/managements/application/cubit/managements_cubit.dart';
 import '../features/managements/presentation/pages/managements_page.dart';
 import '../features/sync/application/cubit/sync_cubit.dart';
@@ -20,21 +18,18 @@ class _HomeShellPageState extends State<HomeShellPage> {
   int _currentIndex = 0;
   late final ManagementsCubit _managementsCubit;
   late final SyncCubit _syncCubit;
-  late final BitacoraCubit _bitacoraCubit;
 
   @override
   void initState() {
     super.initState();
     _managementsCubit = Modular.get<ManagementsCubit>();
     _syncCubit = Modular.get<SyncCubit>();
-    _bitacoraCubit = Modular.get<BitacoraCubit>();
   }
 
   @override
   void dispose() {
     _managementsCubit.close();
     _syncCubit.close();
-    _bitacoraCubit.close();
     super.dispose();
   }
 
@@ -44,12 +39,11 @@ class _HomeShellPageState extends State<HomeShellPage> {
       providers: [
         BlocProvider.value(value: _managementsCubit),
         BlocProvider.value(value: _syncCubit),
-        BlocProvider.value(value: _bitacoraCubit),
       ],
       child: Scaffold(
         body: IndexedStack(
           index: _currentIndex,
-          children: const [ManagementsPage(), SyncPage(), BitacoraPage()],
+          children: const [ManagementsPage(), SyncPage()],
         ),
         bottomNavigationBar: AppBottomNavigation(
           currentIndex: _currentIndex,

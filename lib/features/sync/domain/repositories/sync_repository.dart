@@ -2,7 +2,6 @@ import '../entities/sync_operation.dart';
 
 abstract class SyncRepository {
   Stream<List<SyncOperation>> watchQueue();
-  Stream<List<SyncOperation>> watchLog();
   Future<List<SyncOperation>> getPending();
   Future<void> insert(SyncOperation operation);
   Future<void> updateStatus(
@@ -12,6 +11,7 @@ abstract class SyncRepository {
     String? lastError,
     DateTime? syncedAt,
   });
+  Future<void> clearCompleted();
   Future<void> resetFailed();
   Future<void> resetOne(String id);
 }

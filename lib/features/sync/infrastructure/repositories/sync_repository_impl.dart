@@ -16,30 +16,9 @@ class SyncRepositoryImpl implements SyncRepository {
         _db.managementsTable.localId.equalsExp(_db.syncQueueTable.localId),
       ),
     ]);
-    query.where(_db.syncQueueTable.status.isNotValue('synced'));
     query.orderBy([
       OrderingTerm(
           expression: _db.syncQueueTable.createdAt, mode: OrderingMode.desc),
-    ]);
-    return query.watch().map((rows) => rows.map((row) {
-          final op = row.readTable(_db.syncQueueTable);
-          final mgmt = row.readTableOrNull(_db.managementsTable);
-          return _toEntity(op, mgmt?.title);
-        }).toList());
-  }
-
-  @override
-  Stream<List<SyncOperation>> watchLog() {
-    final query = _db.select(_db.syncQueueTable).join([
-      leftOuterJoin(
-        _db.managementsTable,
-        _db.managementsTable.localId.equalsExp(_db.syncQueueTable.localId),
-      ),
-    ]);
-    query.where(_db.syncQueueTable.status.equals('synced'));
-    query.orderBy([
-      OrderingTerm(
-          expression: _db.syncQueueTable.syncedAt, mode: OrderingMode.desc),
     ]);
     return query.watch().map((rows) => rows.map((row) {
           final op = row.readTable(_db.syncQueueTable);
@@ -91,6 +70,13 @@ class SyncRepositoryImpl implements SyncRepository {
       syncedAt: syncedAt != null ? Value(syncedAt) : const Value.absent(),
       updatedAt: Value(DateTime.now()),
     ));
+  }
+
+  @override
+  Future<void> clearCompleted() async {
+    await (_db.delete(_db.syncQueueTable)
+          ..where((t) => t.status.isIn(['synced', 'failed'])))
+        .go();
   }
 
   @override

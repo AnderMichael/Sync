@@ -1080,6 +1080,532 @@ class SyncQueueTableCompanion extends UpdateCompanion<SyncQueueRow> {
   }
 }
 
+class $SyncLogTableTable extends SyncLogTable
+    with TableInfo<$SyncLogTableTable, SyncLogRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SyncLogTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _localIdMeta = const VerificationMeta(
+    'localId',
+  );
+  @override
+  late final GeneratedColumn<String> localId = GeneratedColumn<String>(
+    'local_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _operationTypeMeta = const VerificationMeta(
+    'operationType',
+  );
+  @override
+  late final GeneratedColumn<String> operationType = GeneratedColumn<String>(
+    'operation_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _gestionVersionMeta = const VerificationMeta(
+    'gestionVersion',
+  );
+  @override
+  late final GeneratedColumn<String> gestionVersion = GeneratedColumn<String>(
+    'gestion_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _attemptsMeta = const VerificationMeta(
+    'attempts',
+  );
+  @override
+  late final GeneratedColumn<int> attempts = GeneratedColumn<int>(
+    'attempts',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _errorMessageMeta = const VerificationMeta(
+    'errorMessage',
+  );
+  @override
+  late final GeneratedColumn<String> errorMessage = GeneratedColumn<String>(
+    'error_message',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _occurredAtMeta = const VerificationMeta(
+    'occurredAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> occurredAt = GeneratedColumn<DateTime>(
+    'occurred_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    localId,
+    operationType,
+    status,
+    gestionVersion,
+    attempts,
+    errorMessage,
+    occurredAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'sync_log';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SyncLogRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('local_id')) {
+      context.handle(
+        _localIdMeta,
+        localId.isAcceptableOrUnknown(data['local_id']!, _localIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_localIdMeta);
+    }
+    if (data.containsKey('operation_type')) {
+      context.handle(
+        _operationTypeMeta,
+        operationType.isAcceptableOrUnknown(
+          data['operation_type']!,
+          _operationTypeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_operationTypeMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('gestion_version')) {
+      context.handle(
+        _gestionVersionMeta,
+        gestionVersion.isAcceptableOrUnknown(
+          data['gestion_version']!,
+          _gestionVersionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_gestionVersionMeta);
+    }
+    if (data.containsKey('attempts')) {
+      context.handle(
+        _attemptsMeta,
+        attempts.isAcceptableOrUnknown(data['attempts']!, _attemptsMeta),
+      );
+    }
+    if (data.containsKey('error_message')) {
+      context.handle(
+        _errorMessageMeta,
+        errorMessage.isAcceptableOrUnknown(
+          data['error_message']!,
+          _errorMessageMeta,
+        ),
+      );
+    }
+    if (data.containsKey('occurred_at')) {
+      context.handle(
+        _occurredAtMeta,
+        occurredAt.isAcceptableOrUnknown(data['occurred_at']!, _occurredAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_occurredAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SyncLogRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SyncLogRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      localId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}local_id'],
+      )!,
+      operationType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}operation_type'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      gestionVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}gestion_version'],
+      )!,
+      attempts: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}attempts'],
+      )!,
+      errorMessage: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}error_message'],
+      ),
+      occurredAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}occurred_at'],
+      )!,
+    );
+  }
+
+  @override
+  $SyncLogTableTable createAlias(String alias) {
+    return $SyncLogTableTable(attachedDatabase, alias);
+  }
+}
+
+class SyncLogRow extends DataClass implements Insertable<SyncLogRow> {
+  final String id;
+  final String localId;
+  final String operationType;
+  final String status;
+  final String gestionVersion;
+  final int attempts;
+  final String? errorMessage;
+  final DateTime occurredAt;
+  const SyncLogRow({
+    required this.id,
+    required this.localId,
+    required this.operationType,
+    required this.status,
+    required this.gestionVersion,
+    required this.attempts,
+    this.errorMessage,
+    required this.occurredAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['local_id'] = Variable<String>(localId);
+    map['operation_type'] = Variable<String>(operationType);
+    map['status'] = Variable<String>(status);
+    map['gestion_version'] = Variable<String>(gestionVersion);
+    map['attempts'] = Variable<int>(attempts);
+    if (!nullToAbsent || errorMessage != null) {
+      map['error_message'] = Variable<String>(errorMessage);
+    }
+    map['occurred_at'] = Variable<DateTime>(occurredAt);
+    return map;
+  }
+
+  SyncLogTableCompanion toCompanion(bool nullToAbsent) {
+    return SyncLogTableCompanion(
+      id: Value(id),
+      localId: Value(localId),
+      operationType: Value(operationType),
+      status: Value(status),
+      gestionVersion: Value(gestionVersion),
+      attempts: Value(attempts),
+      errorMessage: errorMessage == null && nullToAbsent
+          ? const Value.absent()
+          : Value(errorMessage),
+      occurredAt: Value(occurredAt),
+    );
+  }
+
+  factory SyncLogRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SyncLogRow(
+      id: serializer.fromJson<String>(json['id']),
+      localId: serializer.fromJson<String>(json['localId']),
+      operationType: serializer.fromJson<String>(json['operationType']),
+      status: serializer.fromJson<String>(json['status']),
+      gestionVersion: serializer.fromJson<String>(json['gestionVersion']),
+      attempts: serializer.fromJson<int>(json['attempts']),
+      errorMessage: serializer.fromJson<String?>(json['errorMessage']),
+      occurredAt: serializer.fromJson<DateTime>(json['occurredAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'localId': serializer.toJson<String>(localId),
+      'operationType': serializer.toJson<String>(operationType),
+      'status': serializer.toJson<String>(status),
+      'gestionVersion': serializer.toJson<String>(gestionVersion),
+      'attempts': serializer.toJson<int>(attempts),
+      'errorMessage': serializer.toJson<String?>(errorMessage),
+      'occurredAt': serializer.toJson<DateTime>(occurredAt),
+    };
+  }
+
+  SyncLogRow copyWith({
+    String? id,
+    String? localId,
+    String? operationType,
+    String? status,
+    String? gestionVersion,
+    int? attempts,
+    Value<String?> errorMessage = const Value.absent(),
+    DateTime? occurredAt,
+  }) => SyncLogRow(
+    id: id ?? this.id,
+    localId: localId ?? this.localId,
+    operationType: operationType ?? this.operationType,
+    status: status ?? this.status,
+    gestionVersion: gestionVersion ?? this.gestionVersion,
+    attempts: attempts ?? this.attempts,
+    errorMessage: errorMessage.present ? errorMessage.value : this.errorMessage,
+    occurredAt: occurredAt ?? this.occurredAt,
+  );
+  SyncLogRow copyWithCompanion(SyncLogTableCompanion data) {
+    return SyncLogRow(
+      id: data.id.present ? data.id.value : this.id,
+      localId: data.localId.present ? data.localId.value : this.localId,
+      operationType: data.operationType.present
+          ? data.operationType.value
+          : this.operationType,
+      status: data.status.present ? data.status.value : this.status,
+      gestionVersion: data.gestionVersion.present
+          ? data.gestionVersion.value
+          : this.gestionVersion,
+      attempts: data.attempts.present ? data.attempts.value : this.attempts,
+      errorMessage: data.errorMessage.present
+          ? data.errorMessage.value
+          : this.errorMessage,
+      occurredAt: data.occurredAt.present
+          ? data.occurredAt.value
+          : this.occurredAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SyncLogRow(')
+          ..write('id: $id, ')
+          ..write('localId: $localId, ')
+          ..write('operationType: $operationType, ')
+          ..write('status: $status, ')
+          ..write('gestionVersion: $gestionVersion, ')
+          ..write('attempts: $attempts, ')
+          ..write('errorMessage: $errorMessage, ')
+          ..write('occurredAt: $occurredAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    localId,
+    operationType,
+    status,
+    gestionVersion,
+    attempts,
+    errorMessage,
+    occurredAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SyncLogRow &&
+          other.id == this.id &&
+          other.localId == this.localId &&
+          other.operationType == this.operationType &&
+          other.status == this.status &&
+          other.gestionVersion == this.gestionVersion &&
+          other.attempts == this.attempts &&
+          other.errorMessage == this.errorMessage &&
+          other.occurredAt == this.occurredAt);
+}
+
+class SyncLogTableCompanion extends UpdateCompanion<SyncLogRow> {
+  final Value<String> id;
+  final Value<String> localId;
+  final Value<String> operationType;
+  final Value<String> status;
+  final Value<String> gestionVersion;
+  final Value<int> attempts;
+  final Value<String?> errorMessage;
+  final Value<DateTime> occurredAt;
+  final Value<int> rowid;
+  const SyncLogTableCompanion({
+    this.id = const Value.absent(),
+    this.localId = const Value.absent(),
+    this.operationType = const Value.absent(),
+    this.status = const Value.absent(),
+    this.gestionVersion = const Value.absent(),
+    this.attempts = const Value.absent(),
+    this.errorMessage = const Value.absent(),
+    this.occurredAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SyncLogTableCompanion.insert({
+    required String id,
+    required String localId,
+    required String operationType,
+    required String status,
+    required String gestionVersion,
+    this.attempts = const Value.absent(),
+    this.errorMessage = const Value.absent(),
+    required DateTime occurredAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       localId = Value(localId),
+       operationType = Value(operationType),
+       status = Value(status),
+       gestionVersion = Value(gestionVersion),
+       occurredAt = Value(occurredAt);
+  static Insertable<SyncLogRow> custom({
+    Expression<String>? id,
+    Expression<String>? localId,
+    Expression<String>? operationType,
+    Expression<String>? status,
+    Expression<String>? gestionVersion,
+    Expression<int>? attempts,
+    Expression<String>? errorMessage,
+    Expression<DateTime>? occurredAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (localId != null) 'local_id': localId,
+      if (operationType != null) 'operation_type': operationType,
+      if (status != null) 'status': status,
+      if (gestionVersion != null) 'gestion_version': gestionVersion,
+      if (attempts != null) 'attempts': attempts,
+      if (errorMessage != null) 'error_message': errorMessage,
+      if (occurredAt != null) 'occurred_at': occurredAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SyncLogTableCompanion copyWith({
+    Value<String>? id,
+    Value<String>? localId,
+    Value<String>? operationType,
+    Value<String>? status,
+    Value<String>? gestionVersion,
+    Value<int>? attempts,
+    Value<String?>? errorMessage,
+    Value<DateTime>? occurredAt,
+    Value<int>? rowid,
+  }) {
+    return SyncLogTableCompanion(
+      id: id ?? this.id,
+      localId: localId ?? this.localId,
+      operationType: operationType ?? this.operationType,
+      status: status ?? this.status,
+      gestionVersion: gestionVersion ?? this.gestionVersion,
+      attempts: attempts ?? this.attempts,
+      errorMessage: errorMessage ?? this.errorMessage,
+      occurredAt: occurredAt ?? this.occurredAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (localId.present) {
+      map['local_id'] = Variable<String>(localId.value);
+    }
+    if (operationType.present) {
+      map['operation_type'] = Variable<String>(operationType.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (gestionVersion.present) {
+      map['gestion_version'] = Variable<String>(gestionVersion.value);
+    }
+    if (attempts.present) {
+      map['attempts'] = Variable<int>(attempts.value);
+    }
+    if (errorMessage.present) {
+      map['error_message'] = Variable<String>(errorMessage.value);
+    }
+    if (occurredAt.present) {
+      map['occurred_at'] = Variable<DateTime>(occurredAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SyncLogTableCompanion(')
+          ..write('id: $id, ')
+          ..write('localId: $localId, ')
+          ..write('operationType: $operationType, ')
+          ..write('status: $status, ')
+          ..write('gestionVersion: $gestionVersion, ')
+          ..write('attempts: $attempts, ')
+          ..write('errorMessage: $errorMessage, ')
+          ..write('occurredAt: $occurredAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1087,6 +1613,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this,
   );
   late final $SyncQueueTableTable syncQueueTable = $SyncQueueTableTable(this);
+  late final $SyncLogTableTable syncLogTable = $SyncLogTableTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1094,6 +1621,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     managementsTable,
     syncQueueTable,
+    syncLogTable,
   ];
 }
 
@@ -1644,6 +2172,271 @@ typedef $$SyncQueueTableTableProcessedTableManager =
       SyncQueueRow,
       PrefetchHooks Function()
     >;
+typedef $$SyncLogTableTableCreateCompanionBuilder =
+    SyncLogTableCompanion Function({
+      required String id,
+      required String localId,
+      required String operationType,
+      required String status,
+      required String gestionVersion,
+      Value<int> attempts,
+      Value<String?> errorMessage,
+      required DateTime occurredAt,
+      Value<int> rowid,
+    });
+typedef $$SyncLogTableTableUpdateCompanionBuilder =
+    SyncLogTableCompanion Function({
+      Value<String> id,
+      Value<String> localId,
+      Value<String> operationType,
+      Value<String> status,
+      Value<String> gestionVersion,
+      Value<int> attempts,
+      Value<String?> errorMessage,
+      Value<DateTime> occurredAt,
+      Value<int> rowid,
+    });
+
+class $$SyncLogTableTableFilterComposer
+    extends Composer<_$AppDatabase, $SyncLogTableTable> {
+  $$SyncLogTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get localId => $composableBuilder(
+    column: $table.localId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get operationType => $composableBuilder(
+    column: $table.operationType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get gestionVersion => $composableBuilder(
+    column: $table.gestionVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get attempts => $composableBuilder(
+    column: $table.attempts,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get errorMessage => $composableBuilder(
+    column: $table.errorMessage,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get occurredAt => $composableBuilder(
+    column: $table.occurredAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SyncLogTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $SyncLogTableTable> {
+  $$SyncLogTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get localId => $composableBuilder(
+    column: $table.localId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get operationType => $composableBuilder(
+    column: $table.operationType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get gestionVersion => $composableBuilder(
+    column: $table.gestionVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get attempts => $composableBuilder(
+    column: $table.attempts,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get errorMessage => $composableBuilder(
+    column: $table.errorMessage,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get occurredAt => $composableBuilder(
+    column: $table.occurredAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SyncLogTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SyncLogTableTable> {
+  $$SyncLogTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get localId =>
+      $composableBuilder(column: $table.localId, builder: (column) => column);
+
+  GeneratedColumn<String> get operationType => $composableBuilder(
+    column: $table.operationType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get gestionVersion => $composableBuilder(
+    column: $table.gestionVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get attempts =>
+      $composableBuilder(column: $table.attempts, builder: (column) => column);
+
+  GeneratedColumn<String> get errorMessage => $composableBuilder(
+    column: $table.errorMessage,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get occurredAt => $composableBuilder(
+    column: $table.occurredAt,
+    builder: (column) => column,
+  );
+}
+
+class $$SyncLogTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SyncLogTableTable,
+          SyncLogRow,
+          $$SyncLogTableTableFilterComposer,
+          $$SyncLogTableTableOrderingComposer,
+          $$SyncLogTableTableAnnotationComposer,
+          $$SyncLogTableTableCreateCompanionBuilder,
+          $$SyncLogTableTableUpdateCompanionBuilder,
+          (
+            SyncLogRow,
+            BaseReferences<_$AppDatabase, $SyncLogTableTable, SyncLogRow>,
+          ),
+          SyncLogRow,
+          PrefetchHooks Function()
+        > {
+  $$SyncLogTableTableTableManager(_$AppDatabase db, $SyncLogTableTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SyncLogTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SyncLogTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SyncLogTableTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> localId = const Value.absent(),
+                Value<String> operationType = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String> gestionVersion = const Value.absent(),
+                Value<int> attempts = const Value.absent(),
+                Value<String?> errorMessage = const Value.absent(),
+                Value<DateTime> occurredAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SyncLogTableCompanion(
+                id: id,
+                localId: localId,
+                operationType: operationType,
+                status: status,
+                gestionVersion: gestionVersion,
+                attempts: attempts,
+                errorMessage: errorMessage,
+                occurredAt: occurredAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String localId,
+                required String operationType,
+                required String status,
+                required String gestionVersion,
+                Value<int> attempts = const Value.absent(),
+                Value<String?> errorMessage = const Value.absent(),
+                required DateTime occurredAt,
+                Value<int> rowid = const Value.absent(),
+              }) => SyncLogTableCompanion.insert(
+                id: id,
+                localId: localId,
+                operationType: operationType,
+                status: status,
+                gestionVersion: gestionVersion,
+                attempts: attempts,
+                errorMessage: errorMessage,
+                occurredAt: occurredAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SyncLogTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SyncLogTableTable,
+      SyncLogRow,
+      $$SyncLogTableTableFilterComposer,
+      $$SyncLogTableTableOrderingComposer,
+      $$SyncLogTableTableAnnotationComposer,
+      $$SyncLogTableTableCreateCompanionBuilder,
+      $$SyncLogTableTableUpdateCompanionBuilder,
+      (
+        SyncLogRow,
+        BaseReferences<_$AppDatabase, $SyncLogTableTable, SyncLogRow>,
+      ),
+      SyncLogRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -1652,4 +2445,6 @@ class $AppDatabaseManager {
       $$ManagementsTableTableTableManager(_db, _db.managementsTable);
   $$SyncQueueTableTableTableManager get syncQueueTable =>
       $$SyncQueueTableTableTableManager(_db, _db.syncQueueTable);
+  $$SyncLogTableTableTableManager get syncLogTable =>
+      $$SyncLogTableTableTableManager(_db, _db.syncLogTable);
 }

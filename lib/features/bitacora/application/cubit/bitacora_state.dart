@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../../sync/domain/entities/sync_operation.dart';
+import '../../domain/entities/sync_log_entry.dart';
 
 sealed class BitacoraState extends Equatable {
   const BitacoraState();
@@ -12,7 +12,7 @@ class BitacoraLoading extends BitacoraState {
 }
 
 class BitacoraLoaded extends BitacoraState {
-  final List<SyncOperation> entries;
+  final List<SyncLogEntry> entries;
   const BitacoraLoaded(this.entries);
   @override
   List<Object?> get props => [entries];

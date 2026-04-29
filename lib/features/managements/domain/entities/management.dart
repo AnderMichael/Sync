@@ -21,6 +21,17 @@ class Management extends Equatable {
     required this.updatedAt,
   });
 
+  Map<String, dynamic> toJson() => {
+        'localId': localId,
+        'title': title,
+        'description': description,
+        'date': date.toIso8601String(),
+        'amount': amount,
+        'syncStatus': syncStatus,
+        'createdAt': createdAt.toIso8601String(),
+        'updatedAt': updatedAt.toIso8601String(),
+      };
+
   Management copyWith({
     String? title,
     String? description,

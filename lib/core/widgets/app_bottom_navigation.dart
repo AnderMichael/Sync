@@ -41,11 +41,6 @@ class AppBottomNavigation extends StatelessWidget {
             selectedIcon: Icon(Icons.sync),
             label: 'Cola',
           ),
-          NavigationDestination(
-            icon: Icon(Icons.history_outlined),
-            selectedIcon: Icon(Icons.history),
-            label: 'Bitácora',
-          ),
         ],
       ),
     );

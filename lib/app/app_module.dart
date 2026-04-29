@@ -3,6 +3,9 @@ import 'package:flutter_modular/flutter_modular.dart';
 import '../core/database/app_database.dart';
 import '../core/network/fake_backend_service.dart';
 import '../features/bitacora/application/cubit/bitacora_cubit.dart';
+import '../features/bitacora/domain/repositories/sync_log_repository.dart';
+import '../features/bitacora/infrastructure/repositories/sync_log_repository_impl.dart';
+import '../features/bitacora/presentation/pages/bitacora_page.dart';
 import '../features/managements/application/cubit/management_form_cubit.dart';
 import '../features/managements/application/cubit/managements_cubit.dart';
 import '../features/managements/domain/repositories/management_repository.dart';
@@ -26,11 +29,15 @@ class AppModule extends Module {
     i.addLazySingleton<SyncRepository>(
       () => SyncRepositoryImpl(Modular.get<AppDatabase>()),
     );
+    i.addLazySingleton<SyncLogRepository>(
+      () => SyncLogRepositoryImpl(Modular.get<AppDatabase>()),
+    );
     i.addLazySingleton<SyncEngine>(
       () => SyncEngine(
         Modular.get<SyncRepository>(),
         Modular.get<ManagementRepository>(),
         Modular.get<FakeBackendService>(),
+        Modular.get<SyncLogRepository>(),
       ),
     );
 
@@ -42,9 +49,6 @@ class AppModule extends Module {
         Modular.get<SyncEngine>(),
         Modular.get<SyncRepository>(),
       ),
-    );
-    i.add<BitacoraCubit>(
-      () => BitacoraCubit(Modular.get<SyncRepository>()),
     );
     i.add<ManagementFormCubit>(
       () => ManagementFormCubit(
@@ -64,6 +68,13 @@ class AppModule extends Module {
         child: ManagementFormPage(
           localId: Modular.args.data as String?,
         ),
+      ),
+    );
+    r.child(
+      '/bitacora',
+      child: (_) => BlocProvider(
+        create: (_) => BitacoraCubit(Modular.get<SyncLogRepository>()),
+        child: const BitacoraPage(),
       ),
     );
   }
