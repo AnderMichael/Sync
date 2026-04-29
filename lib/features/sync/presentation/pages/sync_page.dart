@@ -205,14 +205,21 @@ class _SyncPageState extends State<SyncPage> {
                     padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                     sliver: SliverList.builder(
                       itemCount: sorted.length,
-                      itemBuilder: (context, index) => SyncOperationCard(
-                        key: ValueKey(sorted[index].id),
-                        operation: sorted[index],
-                        onRetry: sorted[index].status == 'failed' && !isSyncing
-                            ? () => BlocProvider.of<SyncCubit>(context)
-                                .retrySingle(sorted[index].id)
-                            : null,
-                      ),
+                      itemBuilder: (context, index) {
+                        final op = sorted[index];
+                        return _AnimatedItem(
+                          itemKey: '${op.id}_${op.status}',
+                          index: index,
+                          child: SyncOperationCard(
+                            key: ValueKey(op.id),
+                            operation: op,
+                            onRetry: op.status == 'failed' && !isSyncing
+                                ? () => BlocProvider.of<SyncCubit>(context)
+                                    .retrySingle(op.id)
+                                : null,
+                          ),
+                        );
+                      },
                     ),
                   ),
               ],
@@ -220,6 +227,36 @@ class _SyncPageState extends State<SyncPage> {
           },
         ),
       ),
+    );
+  }
+}
+
+class _AnimatedItem extends StatelessWidget {
+  final String itemKey;
+  final int index;
+  final Widget child;
+
+  const _AnimatedItem({
+    required this.itemKey,
+    required this.index,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      key: ValueKey(itemKey),
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: Duration(milliseconds: 320 + index * 40),
+      curve: Curves.easeOutCubic,
+      builder: (context, t, child) => Opacity(
+        opacity: t,
+        child: Transform.translate(
+          offset: Offset(0, 20 * (1 - t)),
+          child: child,
+        ),
+      ),
+      child: child,
     );
   }
 }

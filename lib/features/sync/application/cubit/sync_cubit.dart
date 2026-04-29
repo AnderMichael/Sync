@@ -35,7 +35,6 @@ class SyncCubit extends Cubit<SyncState> {
   Future<void> sync() async {
     if (_isSyncing) return;
 
-    // Clear previous batch (synced + failed) before starting a new one
     await _repository.clearCompleted();
 
     _isSyncing = true;
@@ -48,7 +47,6 @@ class SyncCubit extends Cubit<SyncState> {
       await _engine.syncPending();
     } finally {
       _isSyncing = false;
-      // Force SyncLoaded — stream may not re-emit if nothing changed
       _listen();
     }
   }

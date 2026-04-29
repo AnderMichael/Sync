@@ -62,7 +62,6 @@ class _SyncOperationCardState extends State<SyncOperationCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Header ──────────────────────────────────────────
           Padding(
             padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
             child: Column(
@@ -110,7 +109,6 @@ class _SyncOperationCardState extends State<SyncOperationCard> {
             ),
           ),
 
-          // ── Body (condicional) ───────────────────────────────
           if (isSyncing)
             Padding(
               padding: const EdgeInsets.fromLTRB(14, 0, 14, 12),
@@ -142,7 +140,6 @@ class _SyncOperationCardState extends State<SyncOperationCard> {
               ),
             ),
 
-          // ── Footer ──────────────────────────────────────────
           Container(
             decoration: const BoxDecoration(
               color: Color(0xFFF7F8FA),
@@ -153,7 +150,6 @@ class _SyncOperationCardState extends State<SyncOperationCard> {
               children: [
                 Row(
                   children: [
-                    // UUID
                     const Icon(Icons.fingerprint,
                         size: 12, color: AppColors.textMuted),
                     const SizedBox(width: 4),
@@ -168,7 +164,6 @@ class _SyncOperationCardState extends State<SyncOperationCard> {
                       ),
                     ),
                     const Spacer(),
-                    // Intentos
                     if (op.attempts > 0) ...[
                       const Icon(Icons.refresh,
                           size: 12, color: AppColors.textMuted),

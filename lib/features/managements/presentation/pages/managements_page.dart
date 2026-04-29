@@ -17,12 +17,72 @@ class ManagementsPage extends StatefulWidget {
 class _ManagementsPageState extends State<ManagementsPage> {
   String _selectedFilter = 'all';
 
-  final _filters = const [
+  static const _filters = [
     ('all', 'Todos'),
     ('synced', 'Sincronizados'),
     ('pending', 'Pendientes'),
     ('failed', 'Fallidos'),
   ];
+
+  Widget _emptyState() {
+    final (icon, title, subtitle) = switch (_selectedFilter) {
+      'synced' => (
+          Icons.cloud_done_outlined,
+          'Sin gestiones sincronizadas',
+          'Aún no hay gestiones con sincronización exitosa.',
+        ),
+      'pending' => (
+          Icons.hourglass_empty_outlined,
+          'Sin gestiones pendientes',
+          'No hay gestiones esperando sincronización.',
+        ),
+      'failed' => (
+          Icons.error_outline,
+          'Sin gestiones fallidas',
+          'No hay gestiones con errores de sincronización.',
+        ),
+      _ => (
+          Icons.folder_open_outlined,
+          'Sin gestiones',
+          'Crea tu primera gestión con el botón de arriba.',
+        ),
+    };
+
+    final iconColor = _selectedFilter == 'failed'
+        ? AppColors.statusFailed
+        : AppColors.textMuted;
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 52, color: iconColor),
+            const SizedBox(height: 12),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: AppColors.primaryDark,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              subtitle,
+              style: const TextStyle(
+                fontSize: 13,
+                color: AppColors.textSecondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,101 +116,80 @@ class _ManagementsPageState extends State<ManagementsPage> {
                   const SizedBox(height: 16),
                   AppPrimaryButton(
                     label: 'Nueva gestión',
-                    onPressed: () => Modular.to.pushNamed('/managements/form'),
-                  ),
-                  const SizedBox(height: 16),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: _filters.map((filter) {
-                        final isSelected = _selectedFilter == filter.$1;
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: FilterChip(
-                            label: Text(filter.$2),
-                            selected: isSelected,
-                            onSelected: (_) {
-                              setState(() => _selectedFilter = filter.$1);
-                              BlocProvider.of<ManagementsCubit>(context)
-                                  .filterBy(filter.$1);
-                            },
-                            selectedColor: AppColors.primaryDark,
-                            labelStyle: TextStyle(
-                              color: isSelected
-                                  ? Colors.white
-                                  : AppColors.primaryDark,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 13,
-                            ),
-                            backgroundColor: AppColors.cardWhite,
-                            side: BorderSide(
-                              color: isSelected
-                                  ? AppColors.primaryDark
-                                  : AppColors.borderLight,
-                            ),
-                            checkmarkColor: AppColors.accentLime,
-                            showCheckmark: false,
-                          ),
-                        );
-                      }).toList(),
-                    ),
+                    onPressed: () =>
+                        Modular.to.pushNamed('/managements/form'),
                   ),
                 ],
               ),
             ),
+
+            const SizedBox(height: 16),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              clipBehavior: Clip.none,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: _filters.map((filter) {
+                  final isSelected = _selectedFilter == filter.$1;
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: FilterChip(
+                      label: Text(filter.$2),
+                      selected: isSelected,
+                      onSelected: (_) {
+                        setState(() => _selectedFilter = filter.$1);
+                        BlocProvider.of<ManagementsCubit>(context)
+                            .filterBy(filter.$1);
+                      },
+                      selectedColor: AppColors.primaryDark,
+                      labelStyle: TextStyle(
+                        color: isSelected
+                            ? Colors.white
+                            : AppColors.primaryDark,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
+                      backgroundColor: AppColors.cardWhite,
+                      side: BorderSide(
+                        color: isSelected
+                            ? AppColors.primaryDark
+                            : AppColors.borderLight,
+                      ),
+                      checkmarkColor: AppColors.accentLime,
+                      showCheckmark: false,
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+
             const SizedBox(height: 8),
             Expanded(
               child: BlocBuilder<ManagementsCubit, ManagementsState>(
-                builder: (context, state) {
-                  return switch (state) {
-                    ManagementsLoading() => const Center(
-                        child: CircularProgressIndicator(
-                          color: AppColors.primaryDark,
-                        ),
-                      ),
-                    ManagementsEmpty() => const Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.folder_open_outlined,
-                                size: 52, color: AppColors.textMuted),
-                            SizedBox(height: 12),
-                            Text(
-                              'Sin gestiones',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.primaryDark,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              'Crea tu primera gestión con el botón de arriba.',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: AppColors.textSecondary,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ManagementsLoaded(managements: final list) =>
-                      ListView.builder(
-                        padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
-                        itemCount: list.length,
-                        itemBuilder: (context, index) {
-                          final m = list[index];
-                          return ManagementCard(
-                            management: m,
-                            onTap: () => Modular.to.pushNamed(
-                              '/managements/form',
-                              arguments: m.localId,
-                            ),
-                          );
-                        },
-                      ),
-                    ManagementsError(message: final msg) => Center(
+                builder: (context, state) => switch (state) {
+                  ManagementsLoading() => const Center(
+                      child: CircularProgressIndicator(
+                          color: AppColors.primaryDark),
+                    ),
+                  ManagementsEmpty() => _emptyState(),
+                  ManagementsLoaded(managements: final list) =>
+                    ListView.builder(
+                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+                      itemCount: list.length,
+                      itemBuilder: (context, index) {
+                        final m = list[index];
+                        return ManagementCard(
+                          management: m,
+                          onTap: () => Modular.to.pushNamed(
+                            '/managements/form',
+                            arguments: m.localId,
+                          ),
+                        );
+                      },
+                    ),
+                  ManagementsError(message: final msg) => Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 32),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -166,7 +205,7 @@ class _ManagementsPageState extends State<ManagementsPage> {
                           ],
                         ),
                       ),
-                  };
+                    ),
                 },
               ),
             ),

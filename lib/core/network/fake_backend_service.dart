@@ -3,7 +3,6 @@ import 'dart:math';
 class FakeBackendService {
   final Random _random = Random();
 
-  // Operations condemned to always fail (decided on first contact)
   final Set<String> _doomedOperations = {};
 
   Future<void> syncOperation(String operationId) async {

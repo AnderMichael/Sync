@@ -32,7 +32,6 @@ class BitacoraEntryCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Header ──────────────────────────────────────────
           Padding(
             padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
             child: Column(
@@ -96,7 +95,6 @@ class BitacoraEntryCard extends StatelessWidget {
             ),
           ),
 
-          // ── Versión snapshot ─────────────────────────────────
           Padding(
             padding: const EdgeInsets.fromLTRB(14, 0, 14, 12),
             child: Container(
@@ -146,7 +144,6 @@ class BitacoraEntryCard extends StatelessWidget {
             ),
           ),
 
-          // ── Error (si aplica) ────────────────────────────────
           if (entry.errorMessage != null)
             Padding(
               padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
@@ -169,7 +166,6 @@ class BitacoraEntryCard extends StatelessWidget {
               ),
             ),
 
-          // ── Footer ──────────────────────────────────────────
           Container(
             decoration: const BoxDecoration(
               color: Color(0xFFF7F8FA),
