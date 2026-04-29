@@ -18,32 +18,28 @@ class SyncEngine {
   }
 
   Future<void> _processOperation(SyncOperation operation) async {
-    await _syncRepo.updateStatus(operation.id, 'syncing');
     await _managementRepo.updateSyncStatus(operation.localId, 'syncing');
 
-    int currentAttempts = 0;
-
     for (int attempt = 1; attempt <= 3; attempt++) {
+      await _syncRepo.updateStatus(operation.id, 'syncing', attempts: attempt);
       try {
         await _backend.syncOperation(operation.id);
-        currentAttempts = attempt;
         await _syncRepo.updateStatus(
           operation.id,
           'synced',
-          attempts: currentAttempts,
+          attempts: attempt,
           syncedAt: DateTime.now(),
         );
         await _managementRepo.updateSyncStatus(operation.localId, 'synced');
         return;
       } catch (e) {
-        currentAttempts = attempt;
         if (attempt < 3) {
           await Future.delayed(Duration(seconds: attempt));
         } else {
           await _syncRepo.updateStatus(
             operation.id,
             'failed',
-            attempts: currentAttempts,
+            attempts: attempt,
             lastError: e.toString(),
           );
           await _managementRepo.updateSyncStatus(operation.localId, 'failed');
@@ -55,5 +51,12 @@ class SyncEngine {
   Future<void> retryFailed() async {
     await _syncRepo.resetFailed();
     await syncPending();
+  }
+
+  Future<void> retryOne(String operationId) async {
+    await _syncRepo.resetOne(operationId);
+    final pending = await _syncRepo.getPending();
+    final op = pending.where((o) => o.id == operationId).firstOrNull;
+    if (op != null) await _processOperation(op);
   }
 }

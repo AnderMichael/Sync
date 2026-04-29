@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import '../core/database/app_database.dart';
 import '../core/network/fake_backend_service.dart';
+import '../features/bitacora/application/cubit/bitacora_cubit.dart';
 import '../features/managements/application/cubit/management_form_cubit.dart';
 import '../features/managements/application/cubit/managements_cubit.dart';
 import '../features/managements/domain/repositories/management_repository.dart';
@@ -41,6 +42,9 @@ class AppModule extends Module {
         Modular.get<SyncEngine>(),
         Modular.get<SyncRepository>(),
       ),
+    );
+    i.add<BitacoraCubit>(
+      () => BitacoraCubit(Modular.get<SyncRepository>()),
     );
     i.add<ManagementFormCubit>(
       () => ManagementFormCubit(

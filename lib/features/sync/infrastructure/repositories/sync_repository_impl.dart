@@ -9,18 +9,37 @@ class SyncRepositoryImpl implements SyncRepository {
   SyncRepositoryImpl(this._db);
 
   @override
-  Stream<List<SyncOperation>> watchAll() {
+  Stream<List<SyncOperation>> watchQueue() {
     final query = _db.select(_db.syncQueueTable).join([
       leftOuterJoin(
         _db.managementsTable,
-        _db.managementsTable.localId
-            .equalsExp(_db.syncQueueTable.localId),
+        _db.managementsTable.localId.equalsExp(_db.syncQueueTable.localId),
       ),
     ]);
+    query.where(_db.syncQueueTable.status.isNotValue('synced'));
     query.orderBy([
       OrderingTerm(
-          expression: _db.syncQueueTable.createdAt,
-          mode: OrderingMode.desc),
+          expression: _db.syncQueueTable.createdAt, mode: OrderingMode.desc),
+    ]);
+    return query.watch().map((rows) => rows.map((row) {
+          final op = row.readTable(_db.syncQueueTable);
+          final mgmt = row.readTableOrNull(_db.managementsTable);
+          return _toEntity(op, mgmt?.title);
+        }).toList());
+  }
+
+  @override
+  Stream<List<SyncOperation>> watchLog() {
+    final query = _db.select(_db.syncQueueTable).join([
+      leftOuterJoin(
+        _db.managementsTable,
+        _db.managementsTable.localId.equalsExp(_db.syncQueueTable.localId),
+      ),
+    ]);
+    query.where(_db.syncQueueTable.status.equals('synced'));
+    query.orderBy([
+      OrderingTerm(
+          expression: _db.syncQueueTable.syncedAt, mode: OrderingMode.desc),
     ]);
     return query.watch().map((rows) => rows.map((row) {
           final op = row.readTable(_db.syncQueueTable);
@@ -97,6 +116,29 @@ class SyncRepositoryImpl implements SyncRepository {
         updatedAt: Value(DateTime.now()),
       ));
     }
+  }
+
+  @override
+  Future<void> resetOne(String id) async {
+    final rows = await (_db.select(_db.syncQueueTable)
+          ..where((t) => t.id.equals(id)))
+        .get();
+    if (rows.isEmpty) return;
+
+    await (_db.update(_db.syncQueueTable)..where((t) => t.id.equals(id)))
+        .write(SyncQueueTableCompanion(
+      status: const Value('pending'),
+      attempts: const Value(0),
+      lastError: const Value<String?>(null),
+      updatedAt: Value(DateTime.now()),
+    ));
+
+    await (_db.update(_db.managementsTable)
+          ..where((t) => t.localId.equals(rows.first.localId)))
+        .write(ManagementsTableCompanion(
+      syncStatus: const Value('pending'),
+      updatedAt: Value(DateTime.now()),
+    ));
   }
 
   SyncOperation _toEntity(SyncQueueRow row, String? managementTitle) =>

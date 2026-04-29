@@ -4,18 +4,70 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_primary_button.dart';
 import '../../application/cubit/sync_cubit.dart';
 import '../../application/cubit/sync_state.dart';
+import '../../domain/entities/sync_operation.dart';
 import '../widgets/sync_operation_card.dart';
 import '../widgets/sync_summary_card.dart';
 
-class SyncPage extends StatelessWidget {
+class SyncPage extends StatefulWidget {
   const SyncPage({super.key});
+
+  @override
+  State<SyncPage> createState() => _SyncPageState();
+}
+
+class _SyncPageState extends State<SyncPage> {
+  final _scrollController = ScrollController();
+  String? _lastActiveSyncId;
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  List<SyncOperation> _sorted(List<SyncOperation> ops) {
+    const order = {'syncing': 0, 'pending': 1, 'failed': 2, 'synced': 3};
+    return [...ops]..sort(
+        (a, b) => (order[a.status] ?? 4).compareTo(order[b.status] ?? 4),
+      );
+  }
+
+  void _scrollToTopIfNewSyncing(List<SyncOperation> ops) {
+    final syncing = ops.where((o) => o.status == 'syncing').firstOrNull;
+    if (syncing == null) {
+      _lastActiveSyncId = null;
+      return;
+    }
+    if (syncing.id != _lastActiveSyncId) {
+      _lastActiveSyncId = syncing.id;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            0,
+            duration: const Duration(milliseconds: 350),
+            curve: Curves.easeOut,
+          );
+        }
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: BlocBuilder<SyncCubit, SyncState>(
+        child: BlocConsumer<SyncCubit, SyncState>(
+          listenWhen: (_, current) =>
+              current is SyncSyncing || current is SyncLoaded,
+          listener: (context, state) {
+            final ops = switch (state) {
+              SyncLoaded(operations: final o) => o,
+              SyncSyncing(operations: final o) => o,
+              _ => <SyncOperation>[],
+            };
+            _scrollToTopIfNewSyncing(ops);
+          },
           builder: (context, state) {
             final isSyncing = state is SyncSyncing;
             final operations = switch (state) {
@@ -28,10 +80,9 @@ class SyncPage extends StatelessWidget {
               SyncSyncing(summary: final s) => s,
               _ => null,
             };
-            final hasFailed =
-                operations?.any((o) => o.status == 'failed') ?? false;
-
+            final sorted = operations != null ? _sorted(operations) : null;
             return CustomScrollView(
+              controller: _scrollController,
               slivers: [
                 SliverToBoxAdapter(
                   child: Padding(
@@ -56,8 +107,7 @@ class SyncPage extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        if (summary != null)
-                          SyncSummaryCard(summary: summary),
+                        if (summary != null) SyncSummaryCard(summary: summary),
                         const SizedBox(height: 16),
                         AppPrimaryButton(
                           label: isSyncing
@@ -65,39 +115,12 @@ class SyncPage extends StatelessWidget {
                               : 'Sincronizar ahora',
                           onPressed: isSyncing
                               ? null
-                              : () => BlocProvider.of<SyncCubit>(context).sync(),
+                              : () =>
+                                  BlocProvider.of<SyncCubit>(context).sync(),
                           isLoading: isSyncing,
                         ),
-                        if (hasFailed && !isSyncing) ...[
-                          const SizedBox(height: 10),
-                          SizedBox(
-                            width: double.infinity,
-                            height: 48,
-                            child: OutlinedButton.icon(
-                              onPressed: () =>
-                                  BlocProvider.of<SyncCubit>(context).retryFailed(),
-                              icon: const Icon(Icons.refresh,
-                                  size: 16,
-                                  color: AppColors.primaryDark),
-                              label: const Text(
-                                'Reintentar fallidos',
-                                style: TextStyle(
-                                  color: AppColors.primaryDark,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              style: OutlinedButton.styleFrom(
-                                side: const BorderSide(
-                                    color: AppColors.primaryDark),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
                         const SizedBox(height: 20),
-                        if (operations != null && operations.isNotEmpty)
+                        if (sorted != null && sorted.isNotEmpty)
                           const Text(
                             'Operaciones',
                             style: TextStyle(
@@ -118,7 +141,7 @@ class SyncPage extends StatelessWidget {
                           color: AppColors.primaryDark),
                     ),
                   )
-                else if (operations != null && operations.isEmpty)
+                else if (sorted != null && sorted.isEmpty)
                   const SliverFillRemaining(
                     child: Center(
                       child: Column(
@@ -147,13 +170,19 @@ class SyncPage extends StatelessWidget {
                       ),
                     ),
                   )
-                else if (operations != null)
+                else if (sorted != null)
                   SliverPadding(
                     padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                     sliver: SliverList.builder(
-                      itemCount: operations.length,
-                      itemBuilder: (context, index) =>
-                          SyncOperationCard(operation: operations[index]),
+                      itemCount: sorted.length,
+                      itemBuilder: (context, index) => SyncOperationCard(
+                        key: ValueKey(sorted[index].id),
+                        operation: sorted[index],
+                        onRetry: sorted[index].status == 'failed' && !isSyncing
+                            ? () => BlocProvider.of<SyncCubit>(context)
+                                .retrySingle(sorted[index].id)
+                            : null,
+                      ),
                     ),
                   ),
               ],

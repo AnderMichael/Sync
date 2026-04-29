@@ -18,7 +18,7 @@ class SyncCubit extends Cubit<SyncState> {
 
   void _listen() {
     _subscription?.cancel();
-    _subscription = _repository.watchAll().listen(
+    _subscription = _repository.watchQueue().listen(
       (operations) {
         final summary = _buildSummary(operations);
         if (_isSyncing) {
@@ -64,6 +64,25 @@ class SyncCubit extends Cubit<SyncState> {
 
     try {
       await _engine.retryFailed();
+    } finally {
+      _isSyncing = false;
+    }
+  }
+
+  Future<void> retrySingle(String operationId) async {
+    if (_isSyncing) return;
+    _isSyncing = true;
+
+    final ops = state is SyncLoaded
+        ? (state as SyncLoaded).operations
+        : <SyncOperation>[];
+    final summary = state is SyncLoaded
+        ? (state as SyncLoaded).summary
+        : SyncSummary.empty();
+    emit(SyncSyncing(operations: ops, summary: summary));
+
+    try {
+      await _engine.retryOne(operationId);
     } finally {
       _isSyncing = false;
     }

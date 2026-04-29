@@ -3,14 +3,42 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_status_badge.dart';
 import '../../domain/entities/sync_operation.dart';
 
-class SyncOperationCard extends StatelessWidget {
+class SyncOperationCard extends StatefulWidget {
   final SyncOperation operation;
+  final VoidCallback? onRetry;
 
-  const SyncOperationCard({super.key, required this.operation});
+  const SyncOperationCard({super.key, required this.operation, this.onRetry});
+
+  @override
+  State<SyncOperationCard> createState() => _SyncOperationCardState();
+}
+
+class _SyncOperationCardState extends State<SyncOperationCard> {
+  static const _maxAttempts = 3;
+  late int _prevAttempts;
+
+  @override
+  void initState() {
+    super.initState();
+    _prevAttempts = widget.operation.attempts;
+  }
+
+  @override
+  void didUpdateWidget(SyncOperationCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.operation.attempts != widget.operation.attempts) {
+      setState(() => _prevAttempts = oldWidget.operation.attempts);
+    }
+  }
+
+  int get _remaining => (_maxAttempts - widget.operation.attempts).clamp(0, _maxAttempts);
+  int get _prevRemaining => (_maxAttempts - _prevAttempts).clamp(0, _maxAttempts);
 
   @override
   Widget build(BuildContext context) {
-    final isCreate = operation.operationType == 'create';
+    final op = widget.operation;
+    final isCreate = op.operationType == 'create';
+    final isSyncing = op.status == 'syncing';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -18,10 +46,13 @@ class SyncOperationCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.cardWhite,
         borderRadius: BorderRadius.circular(14),
+        border: isSyncing
+            ? Border.all(color: AppColors.accentLime.withAlpha(120), width: 1.5)
+            : null,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(6),
-            blurRadius: 8,
+            color: Colors.black.withAlpha(isSyncing ? 12 : 6),
+            blurRadius: isSyncing ? 14 : 8,
             offset: const Offset(0, 2),
           ),
         ],
@@ -32,8 +63,7 @@ class SyncOperationCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: isCreate
                       ? AppColors.accentLime.withAlpha(40)
@@ -53,7 +83,7 @@ class SyncOperationCard extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  operation.managementTitle ?? operation.localId,
+                  op.managementTitle ?? op.localId,
                   style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
@@ -63,39 +93,203 @@ class SyncOperationCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              AppStatusBadge(status: operation.status),
+              AppStatusBadge(status: op.status),
             ],
           ),
-          if (operation.attempts > 0 || operation.lastError != null) ...[
+          if (isSyncing) ...[
+            const SizedBox(height: 12),
+            _CountdownWidget(
+              remaining: _remaining,
+              prevRemaining: _prevRemaining,
+              maxAttempts: _maxAttempts,
+            ),
+          ] else if (op.attempts > 0) ...[
             const SizedBox(height: 8),
             Row(
               children: [
                 const Icon(Icons.refresh, size: 12, color: AppColors.textMuted),
                 const SizedBox(width: 4),
                 Text(
-                  'Intentos: ${operation.attempts}',
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: AppColors.textMuted,
-                  ),
+                  'Intentos: ${op.attempts}',
+                  style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
                 ),
               ],
             ),
           ],
-          if (operation.lastError != null) ...[
+          if (op.lastError != null) ...[
             const SizedBox(height: 4),
             Text(
-              operation.lastError!,
-              style: const TextStyle(
-                fontSize: 11,
-                color: AppColors.statusFailed,
-              ),
+              op.lastError!,
+              style: const TextStyle(fontSize: 11, color: AppColors.statusFailed),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
           ],
+          if (op.status == 'failed' && widget.onRetry != null) ...[
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              height: 36,
+              child: OutlinedButton.icon(
+                onPressed: widget.onRetry,
+                icon: const Icon(Icons.refresh, size: 14,
+                    color: AppColors.primaryDark),
+                label: const Text(
+                  'Reintentar',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primaryDark,
+                  ),
+                ),
+                style: OutlinedButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  side: const BorderSide(color: AppColors.primaryDark),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+            ),
+          ],
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF2F3F5),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.fingerprint, size: 11, color: AppColors.textMuted),
+                const SizedBox(width: 4),
+                Text(
+                  op.localId.substring(0, 8).toUpperCase(),
+                  style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textMuted,
+                    letterSpacing: 1.0,
+                    fontFamily: 'monospace',
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
+    );
+  }
+}
+
+class _CountdownWidget extends StatelessWidget {
+  final int remaining;
+  final int prevRemaining;
+  final int maxAttempts;
+
+  const _CountdownWidget({
+    required this.remaining,
+    required this.prevRemaining,
+    required this.maxAttempts,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        TweenAnimationBuilder<double>(
+          key: ValueKey(remaining),
+          tween: Tween(
+            begin: prevRemaining / maxAttempts.toDouble(),
+            end: remaining / maxAttempts.toDouble(),
+          ),
+          duration: const Duration(milliseconds: 600),
+          curve: Curves.easeInOut,
+          builder: (context, value, _) {
+            return SizedBox(
+              width: 42,
+              height: 42,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  CircularProgressIndicator(
+                    value: value,
+                    strokeWidth: 3.5,
+                    backgroundColor: Colors.grey.withAlpha(30),
+                    valueColor: AlwaysStoppedAnimation(
+                      remaining > 1
+                          ? AppColors.accentLime
+                          : remaining == 1
+                              ? Colors.orange
+                              : AppColors.statusFailed,
+                    ),
+                  ),
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    transitionBuilder: (child, animation) => ScaleTransition(
+                      scale: Tween<double>(begin: 0.4, end: 1.0).animate(
+                        CurvedAnimation(
+                          parent: animation,
+                          curve: Curves.elasticOut,
+                        ),
+                      ),
+                      child: FadeTransition(opacity: animation, child: child),
+                    ),
+                    child: Text(
+                      '$remaining',
+                      key: ValueKey(remaining),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w900,
+                        color: remaining > 1
+                            ? AppColors.primaryDark
+                            : remaining == 1
+                                ? Colors.orange
+                                : AppColors.statusFailed,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Sincronizando...',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primaryDark,
+                ),
+              ),
+              const SizedBox(height: 2),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 250),
+                child: Text(
+                  remaining > 0
+                      ? '$remaining ${remaining == 1 ? 'intento restante' : 'intentos restantes'}'
+                      : 'Último intento...',
+                  key: ValueKey(remaining),
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: remaining > 1
+                        ? AppColors.textMuted
+                        : remaining == 1
+                            ? Colors.orange
+                            : AppColors.statusFailed,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
