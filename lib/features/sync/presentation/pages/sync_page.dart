@@ -72,6 +72,11 @@ class _SyncPageState extends State<SyncPage> {
           },
           builder: (context, state) {
             final isSyncing = state is SyncSyncing;
+            final isOffline = switch (state) {
+              SyncLoaded(isOffline: final o) => o,
+              SyncSyncing(isOffline: final o) => o,
+              _ => false,
+            };
             final operations = switch (state) {
               SyncLoaded(operations: final ops) => ops,
               SyncSyncing(operations: final ops) => ops,
@@ -136,14 +141,23 @@ class _SyncPageState extends State<SyncPage> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 20),
-                        if (summary != null) SyncSummaryCard(summary: summary),
+                        const SizedBox(height: 16),
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 300),
+                          child: isOffline
+                              ? const _OfflineBanner(key: ValueKey('banner'))
+                              : const SizedBox.shrink(key: ValueKey('empty')),
+                        ),
+                        if (summary != null) ...[
+                          const SizedBox(height: 4),
+                          SyncSummaryCard(summary: summary),
+                        ],
                         const SizedBox(height: 16),
                         AppPrimaryButton(
                           label: isSyncing
                               ? 'Sincronizando...'
                               : 'Sincronizar ahora',
-                          onPressed: isSyncing
+                          onPressed: isSyncing || isOffline
                               ? null
                               : () =>
                                   BlocProvider.of<SyncCubit>(context).sync(),
@@ -213,7 +227,7 @@ class _SyncPageState extends State<SyncPage> {
                           child: SyncOperationCard(
                             key: ValueKey(op.id),
                             operation: op,
-                            onRetry: op.status == 'failed' && !isSyncing
+                            onRetry: op.status == 'failed' && !isSyncing && !isOffline
                                 ? () => BlocProvider.of<SyncCubit>(context)
                                     .retrySingle(op.id)
                                 : null,
@@ -226,6 +240,39 @@ class _SyncPageState extends State<SyncPage> {
             );
           },
         ),
+      ),
+    );
+  }
+}
+
+class _OfflineBanner extends StatelessWidget {
+  const _OfflineBanner({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF3CD),
+        border: Border.all(color: const Color(0xFFFFD700), width: 1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: const Row(
+        children: [
+          Icon(Icons.wifi_off_rounded, size: 16, color: Color(0xFF856404)),
+          SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'Sin conexión. La sincronización no está disponible.',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF856404),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

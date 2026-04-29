@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:sync_app/core/database/app_database.dart';
+import 'package:sync_app/core/network/connectivity_service.dart';
 import 'package:sync_app/core/network/fake_backend_service.dart';
 import 'package:sync_app/features/bitacora/application/cubit/bitacora_cubit.dart';
 import 'package:sync_app/features/bitacora/domain/repositories/sync_log_repository.dart';
@@ -22,6 +23,7 @@ class AppModule extends Module {
   void binds(Injector i) {
     i.addLazySingleton<AppDatabase>(AppDatabase.new);
     i.addLazySingleton<FakeBackendService>(FakeBackendService.new);
+    i.addLazySingleton<ConnectivityService>(ConnectivityService.new);
 
     i.addLazySingleton<ManagementRepository>(
       () => ManagementRepositoryImpl(Modular.get<AppDatabase>()),
@@ -48,6 +50,7 @@ class AppModule extends Module {
       () => SyncCubit(
         Modular.get<SyncEngine>(),
         Modular.get<SyncRepository>(),
+        Modular.get<ConnectivityService>(),
       ),
     );
     i.add<ManagementFormCubit>(

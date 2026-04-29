@@ -51,6 +51,14 @@ Procesa las operaciones pendientes en secuencia con hasta 3 reintentos y delay e
 
 El loader se corrigió eliminando el filtro `isNotValue('synced')` de `watchQueue()` y forzando `_listen()` en el `finally` del cubit, evitando que el stream dejara de emitir cuando toda la tanda quedaba sincronizada.
 
+### Middleware de conectividad
+
+`ConnectivityService` (`core/network/connectivity_service.dart`) envuelve `connectivity_plus` y expone `isConnected()` (verificación puntual) y `onConnectivityChanged` (stream reactivo).
+
+`SyncCubit` se suscribe al stream en el constructor y mantiene un flag `_isOffline` actualizado en tiempo real. Los métodos `sync()` y `retrySingle()` retornan sin hacer nada si no hay conexión. Al cambiar la conectividad, el cubit re-emite el estado actual con el campo `isOffline` actualizado.
+
+En la UI, la `SyncPage` muestra un banner amarillo animado cuando no hay red y deshabilita tanto el botón principal como los botones de reintento individuales.
+
 ### Bitácora
 
 Historial append-only en tabla `sync_log` separada de la cola. Registra éxitos y fallos con un snapshot JSON del registro (`gestion_version`) tomado antes de procesar la operación. Accesible desde la Cola como ruta pushed (`/bitacora`).
@@ -81,6 +89,7 @@ Schema v1 con `managements` y `sync_queue`. `sync_log` añadida en v2 con migrac
 | `google_fonts` | Tipografía Space Grotesk |
 | `equatable` | Comparación por valor en entidades y estados |
 | `intl` | Formato de fechas y montos |
+| `connectivity_plus` | Detección de estado de red en tiempo real |
 | `build_runner` + `drift_dev` | Generación de código de Drift |
 
 ---
@@ -89,7 +98,6 @@ Schema v1 con `managements` y `sync_queue`. `sync_log` añadida en v2 con migrac
 
 **Pendientes prioritarios**
 
-- Verificación de conectividad antes de sincronizar — si no hay red, bloquear el botón y mostrar aviso, evitando intentos fallidos innecesarios.
 - Restauración del estado original en operaciones fallidas — si una operación falla definitivamente, revertir el `syncStatus` de la gestión al estado previo en lugar de dejarlo como `failed` sin posibilidad de recuperación automática.
 
 **Con más tiempo**

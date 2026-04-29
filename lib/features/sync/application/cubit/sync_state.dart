@@ -21,17 +21,27 @@ class SyncLoading extends SyncState {
 class SyncLoaded extends SyncState {
   final List<SyncOperation> operations;
   final SyncSummary summary;
-  const SyncLoaded({required this.operations, required this.summary});
+  final bool isOffline;
+  const SyncLoaded({
+    required this.operations,
+    required this.summary,
+    this.isOffline = false,
+  });
   @override
-  List<Object?> get props => [operations, summary];
+  List<Object?> get props => [operations, summary, isOffline];
 }
 
 class SyncSyncing extends SyncState {
   final List<SyncOperation> operations;
   final SyncSummary summary;
-  const SyncSyncing({required this.operations, required this.summary});
+  final bool isOffline;
+  const SyncSyncing({
+    required this.operations,
+    required this.summary,
+    this.isOffline = false,
+  });
   @override
-  List<Object?> get props => [operations, summary];
+  List<Object?> get props => [operations, summary, isOffline];
 }
 
 class SyncError extends SyncState {
